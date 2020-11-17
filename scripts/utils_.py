@@ -5,7 +5,7 @@
 
 import socket
 
-def is_internet_available(host="8.8.8.8", port=53, timeout=20):
+def is_internet_available(host="8.8.8.8", port=53, timeout=1):
     """
     Host: 8.8.8.8 (google-public-dns-a.google.com)
     OpenPort: 53/tcp
@@ -14,10 +14,36 @@ def is_internet_available(host="8.8.8.8", port=53, timeout=20):
     try:
         socket.setdefaulttimeout(timeout)
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
-        return True
+        return True 
     except socket.error as ex:
         print(ex)
-        return False
+        return False 
+
+
+def index_generator(filename, length):
+    max_digits = 7
+    indices = []
+    for idx in range(1, length + 1):
+        digits_in_i = len(str(idx))
+
+        if digits_in_i == max_digits:
+            index = filename + "_" + str(i)
+        else:
+            padding_len = max_digits - digits_in_i
+            index = filename + "_" + "0" * padding_len + str(idx)
+        indices.append(index)
+
+    return np.expand_dims(indices, axis=1)
+
+
+
+# def main():
+# 	print(1)
+
+# 	return 0 
+
+# is_internet_available()
+# main()
 
 
 # bertweet = AutoModel.from_pretrained("vinai/bertweet-baseipyth")
