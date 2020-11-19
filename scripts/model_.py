@@ -65,9 +65,9 @@ def agg_clustering(X):
 	return AgglomerativeClustering(n_clusters=2).fit_predict(X)
 
 
-def kmeans_clustering(X):
+def kmeans_clustering(X, nc):
 
-	return KMeans(n_clusters=4).fit(X)
+	return KMeans(n_clusters=nc).fit(X)
 
 
 def rf_classifier(X, y):
