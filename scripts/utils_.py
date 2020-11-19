@@ -4,6 +4,10 @@
 
 
 import socket
+import random 
+
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 def is_internet_available(host="8.8.8.8", port=53, timeout=1):
     """
@@ -36,11 +40,55 @@ def index_generator(filename, length):
     return np.expand_dims(indices, axis=1)
 
 
+def get_folds(df):
+    """
+    Return dataframe with a column indicating fold ID
+    """
+    L = list(range(1, 5)) 
+    
+    q = df.shape[0] // len(L) 
+    r = df.shape[0] % len(L)
+   
+    
+    folds = L * q + L[:r]
+    
+    random.seed(2020)
+    random.shuffle(folds)
+    
+    # df["folds"] = folds
+    
+    return folds 
+
+
+
+def get_TF_IDF_mat(list_of_tweets, list_of_IDs):
+    vectorizer = TfidfVectorizer()
+    vectors = vectorizer.fit_transform(list_of_tweets) # TODO - need to make it generalizable in future
+    feature_names = vectorizer.get_feature_names()
+    dense = vectors.todense()
+    denselist = dense.tolist()
+    
+    TF_IDF_df = pd.DataFrame(denselist, columns=feature_names)
+    TF_IDF_df["ID"] = list_of_IDs # n
+    return TF_IDF_df
+
+
+if __name__=="__main__":
+    df = pd.read_csv("../data/stack_files/samp_raw_df_april.csv")
+    df_TF_IDF = get_TF_IDF_mat(df["Tweet Text"], df["ID"])
+
+
+
+    df = pd.read_csv("../data/stack_files/balanced_pro_n_anti_mask_df_v4.csv")
+    TF_IDF_df = get_TF_IDF_mat(df["Tweet Text"], df["ID"])
+
+    TF_IDF_df.to_csv("../data/stack_files/balanced_pro_n_anti_mask_TF_IDF_df_v4.csv")
+
 
 # def main():
-# 	print(1)
+#     print(1)
 
-# 	return 0 
+#     return 0 
 
 # is_internet_available()
 # main()

@@ -26,7 +26,11 @@ from sklearn.decomposition import PCA
 from imblearn.over_sampling import SMOTE, KMeansSMOTE
 from imblearn.combine import SMOTETomek
 from sklearn.manifold import TSNE
-# import umap 
+
+from sklearn.decomposition import LatentDirichletAllocation
+
+
+import umap 
 
 # from cuml.manifold.umap import UMAP as cumlUMAP
 from sklearn.manifold.t_sne import trustworthiness
@@ -63,16 +67,16 @@ def agg_clustering(X):
 
 def kmeans_clustering(X):
 
-	return KMeans(n_clusters=2).fit(X)
+	return KMeans(n_clusters=4).fit(X)
 
 
 def rf_classifier(X, y):
 
-    return RandomForestClassifier(n_estimators=750, class_weight="balanced", n_jobs=ncores).fit(X, y)
+    return RandomForestClassifier(n_estimators=100, class_weight="balanced", n_jobs=ncores).fit(X, y)
 
 
 def xgboost_classifier(X, y):
-    xgboost = XGBClassifier(learning_rate=0.1, n_estimators=750, n_jobs=ncores) # , max_depth=32 # for pain detection usnig scale_pos_weight = 2
+    xgboost = XGBClassifier(learning_rate=0.1, n_estimators=100, n_jobs=ncores) # , max_depth=32 # for pain detection usnig scale_pos_weight = 2
 
     model = xgboost.fit(X, y)
 
@@ -109,6 +113,20 @@ def pca(X, n_comp):
 	return PCA(n_components=n_comp).fit(X).transform(X)
 
 
+def latent_da(X, n_comps):
+    lda = LatentDirichletAllocation(n_components=n_comps, random_state=2020) # n_jobs=None
+
+    return lda.fit_transform(X)
+
+
+def latent_da_v2(X_train, X_test, n_comps):
+    lda = LatentDirichletAllocation(n_components=n_comps, random_state=2020) # n_jobs=None 
+
+    return lda.fit_transform(X_train), lda.transform(X_test)
+
+
+
+
 # def t_SNE(X):
 #     embedd = TSNE(n_components=2, perplexity=30.0, early_exaggeration=12.0, learning_rate=200.0, 
 #                     n_iter=1000, metric='euclidean', random_state=2020, method='barnes_hut', n_jobs=ncores)
@@ -116,10 +134,10 @@ def pca(X, n_comp):
 #     return embedd.fit_transform(X)
 
 
-# def umap_(X, n_neigh, m_dist):
-#     reducer = umap.UMAP(n_neighbors=n_neigh, min_dist=m_dist, n_components=2)
+def umap_(X, n_neigh, m_dist):
+    reducer = umap.UMAP(n_neighbors=n_neigh, min_dist=m_dist, n_components=2)
 
-#     return reducer.fit_transform(X)
+    return reducer.fit_transform(X)
 
 
 # def cuml_UMAP_(X, n_neigh, m_dist):

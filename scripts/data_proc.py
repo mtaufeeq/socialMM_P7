@@ -13,6 +13,7 @@ from sklearn.model_selection import train_test_split
 
 import utils_
 import eda 
+import text_polarity
 
 
 def stack_files(data_dir, wrt_dir, mask_cat):
@@ -20,7 +21,7 @@ def stack_files(data_dir, wrt_dir, mask_cat):
 
     # total_num_eng_tweets = 0 
     # filename_n_nTweets = {}
-    new_added_cols = 3 
+    new_added_cols = 8
     n_cols = 16 + new_added_cols 
     mat  = np.zeros((0, n_cols))
     for file in files:
@@ -32,15 +33,27 @@ def stack_files(data_dir, wrt_dir, mask_cat):
         df_eng = eda.tweet_lang(df)
 
         month = file.split("/")[-1].split("_")[0]
-        if month == "March":
-            df_eng["User Location"] = -1
+        # if month == "March":
+        #     df_eng["User Location"] = -1
 
         df_eng["month"] = [month] * df_eng.shape[0]
         df_eng["ground_truth"] = [mask_cat] * df_eng.shape[0]
 
         id_name = str(mask_cat) + "_" + month
         length = df_eng.shape[0]
-        df_eng["sample_ID"] = index_generator(id_name, length)
+        df_eng["CAP_6317_sample_ID"] = index_generator(id_name, length)
+
+        # # folds ID 
+        # df_eng["folds"] = utils_.get_folds(df_eng)
+
+        # polarity_df = text_polarity.get_polarity(df_eng)
+
+        # df_eng["vader_neg"] = polarity_df["vader_neg"].tolist()
+        # df_eng["vader_neu"] = polarity_df["vader_neu"].tolist()
+        # df_eng["vader_pos"] = polarity_df["vader_pos"].tolist()
+        # df_eng["vader_compound"] = polarity_df["vader_compound"].tolist()
+
+        print("English", df_eng.shape)
 
         mat = np.append(mat, df_eng.values, axis=0)
 
@@ -52,7 +65,8 @@ def stack_files(data_dir, wrt_dir, mask_cat):
     # print("Filename and no of tweets:", filename_n_nTweets)
     col_names = ['Tweet Text', 'Tweet Datetime', 'Tweet Id', 'User Id', 'User Name', 'User Location', 'Tweet Coordinates', 
                 'Place Info', 'Country', 'Hashtags', 'Retweets', 'Favorites', 'Language', 'Source', 'Replied Tweet Id', 
-                'Replied Tweet User Id', 'month', 'ground_truth', 'ID']
+                'Replied Tweet User Id', 'month', 'ground_truth', 'ID', "folds", "vader_neg", "vader_neu", "vader_pos",
+                 "vader_compound"]
 
 
     return pd.DataFrame(mat, columns=col_names)
@@ -84,7 +98,16 @@ def get_sample_proMask_tweets(df):
 
 def merge_proMask_w_antiMask(antiMask_df, proMask_df):
 
-    return pd.concat([antiMask_df, proMask_df])
+    return pd.concat([antiMask_df, proMask_df], ignore_index=True)
+
+
+def remove_inconsistent_rows(df):
+	df = df[df["ground_truth"].isin(["0", "1"]) == True]
+	df = df[df["folds"].isin([["1", "2", "3", "4"]]) == True]
+	df =df[df["Favorites"].isin(["en"]) == False]
+
+	if df["month"].unique().tolist() == 9 and df["ID"].unique().tolist() == df.shape[0]:
+		return df
 
 
 if __name__=="__main__":
@@ -126,3 +149,30 @@ if __name__=="__main__":
     filename = "pro_n_anti_mask_df.csv"
     m_df.to_csv(os.path.join(wrt_dir, filename), index=False, header=True)
 
+
+    # remove rows 
+    # filename = "balanced_pro_n_anti_mask_df_v2.csv"
+    # data_dir = "../data/stack_files"
+
+    # df = pd.read_csv(os.path.join(data_dir, filename))
+
+    # df = remove_inconsistent_rows(df)
+
+    # filename = "balanced_pro_n_anti_mask_df_v3.csv"
+    # df.to_csv(os.path.join(data_dir, filename), index=False, header=True)
+
+
+
+
+    # subsample 20% tweet keeping fold balanced 
+    filename = "balanced_pro_n_anti_mask_df_v3.csv"
+    df = pd.read_csv(os.path.join("../data/stack_files", filename))
+
+    seed_ = 2020
+    samp_df, _, _, _ = train_test_split(df, df["ground_truth"], 
+	                                    test_size=0.8, # 0.3, 0.95
+	                                    random_state=seed_, 
+	                                    stratify=df["folds"])
+
+    filename = "balanced_pro_n_anti_mask_df_v4.csv"
+    samp_df.to_csv(os.path.join("../data/stack_files", filename), index=False, header=True)
