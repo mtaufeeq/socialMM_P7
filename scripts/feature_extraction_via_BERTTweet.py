@@ -342,14 +342,29 @@ if __name__ == "__main__":
 
 
     # Get BERT features 
+    data_dir = "../data/stack_files"
+    bert_antiMask_dir = "../data/stack_files"
+
+    # # _ = wrt_feature_files(data_dir, wrt_dir)
+
+
+    filename = "balanced_pro_n_anti_mask_df.csv"
+    BERT_filename = "balanced_pro_n_anti_mask_BERT_df.csv"
+    # wrt_dir = "../data/BERTTweet_AntiMask_Features"
+
+    df = wrt_BERT_features_toFile(os.path.join(data_dir, filename), os.path.join(bert_antiMask_dir, BERT_filename))
+    # wrt_single_file(os.path.join("../data/nomask_tweets_v2_eng", filename), wrt_dir)
+
+
+    # 20% sample 
     # data_dir = "../data/stack_files"
     # bert_antiMask_dir = "../data/stack_files"
 
     # # # _ = wrt_feature_files(data_dir, wrt_dir)
 
 
-    # filename = "balanced_pro_n_anti_mask_df.csv"
-    # BERT_filename = "balanced_pro_n_anti_mask_BERT_df.csv"
+    # filename = "balanced_pro_n_anti_mask_df_v4.csv"
+    # BERT_filename = "balanced_pro_n_anti_mask_BERT_df_v4.csv"
     # # wrt_dir = "../data/BERTTweet_AntiMask_Features"
 
     # df = wrt_BERT_features_toFile(os.path.join(data_dir, filename), os.path.join(bert_antiMask_dir, BERT_filename))
@@ -357,15 +372,3 @@ if __name__ == "__main__":
 
 
 
-    data_dir = "../data/stack_files"
-    bert_antiMask_dir = "../data/stack_files"
-
-    # # _ = wrt_feature_files(data_dir, wrt_dir)
-
-
-    filename = "balanced_pro_n_anti_mask_df_v4.csv"
-    BERT_filename = "balanced_pro_n_anti_mask_BERT_df_v4.csv"
-    # wrt_dir = "../data/BERTTweet_AntiMask_Features"
-
-    df = wrt_BERT_features_toFile(os.path.join(data_dir, filename), os.path.join(bert_antiMask_dir, BERT_filename))
-    # wrt_single_file(os.path.join("../data/nomask_tweets_v2_eng", filename), wrt_dir)

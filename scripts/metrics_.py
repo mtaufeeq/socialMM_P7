@@ -53,16 +53,16 @@ def mae(orig, pred):
 	return mean_absolute_error(orig, pred)
 	
 
-def dt_warping(orig, pred):
-	# reshape data 
-	orig = orig.reshape(-1, 1)
-	pred = pred.reshape(-1, 1)
+# def dt_warping(orig, pred):
+# 	# reshape data 
+# 	orig = orig.reshape(-1, 1)
+# 	pred = pred.reshape(-1, 1)
 
-	euclidean_norm = lambda orig, pred: np.abs(orig - pred)
+# 	euclidean_norm = lambda orig, pred: np.abs(orig - pred)
 
-	d_score, cost_matrix, acc_cost_matrix, path = dtw(orig, pred, dist=euclidean_norm)
+# 	d_score, cost_matrix, acc_cost_matrix, path = dtw(orig, pred, dist=euclidean_norm)
 
-	return d_score, path
+# 	return d_score, path
 
 
 def eval_regression(orig, pred):

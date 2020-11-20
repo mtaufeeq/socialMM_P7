@@ -71,7 +71,8 @@ def train_n_cv_valid_models(df, features, flag):
 
     res_lst = []
     fold_count = 0
-    m_res_mat = np.zeros((0, 10)) # 8 is subject to change 
+    m_res_mat = np.zeros((0, 6)) # 8 is subject to change 
+    col_names = None 
     for fold in folds:
         train_df = df[df["folds"].isin([fold]) == False]
         test_df = df[df["folds"].isin([fold]) == True]
@@ -88,9 +89,16 @@ def train_n_cv_valid_models(df, features, flag):
             print("Results obtained on fold:", fold)
             print(cls_report_df)
 
+            print(confusion_matrix(test_df["ground_truth"], pred))
+
+            cls_report_df["metrics_names"] = cls_report_df.index.tolist()
+            m_res_mat = np.append(m_res_mat, cls_report_df.values, axis=0)
+
+            col_names = cls_report_df.columns.tolist()
+
         # TODO: include tweet ID and prediction for analysis 
 
-    return 0 
+    return pd.DataFrame(m_res_mat, columns = col_names)
 
 
 def train_n_cv_valid_LDA(df, features, flag):
