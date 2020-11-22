@@ -60,9 +60,9 @@ ncores = multiprocessing.cpu_count() - 1
 #     return X_train2, y_train_2
 
 
-def agg_clustering(X):
+# def agg_clustering(X):
 
-	return AgglomerativeClustering(n_clusters=2).fit_predict(X)
+# 	return AgglomerativeClustering(n_clusters=2).fit_predict(X)
 
 
 def kmeans_clustering(X, nc):
@@ -70,13 +70,13 @@ def kmeans_clustering(X, nc):
 	return KMeans(n_clusters=nc).fit(X)
 
 
-def rf_classifier(X, y):
+# def rf_classifier(X, y):
 
-    return RandomForestClassifier(n_estimators=100, class_weight="balanced", n_jobs=ncores).fit(X, y)
+#     return RandomForestClassifier(n_estimators=100, class_weight="balanced", n_jobs=ncores).fit(X, y)
 
 
 def xgboost_classifier(X, y):
-    xgboost = XGBClassifier(learning_rate=0.1, n_estimators=100, n_jobs=ncores) # , max_depth=32 # for pain detection usnig scale_pos_weight = 2
+    xgboost = XGBClassifier(learning_rate=0.01, n_estimators=500, n_jobs=ncores) # , max_depth=32 # for pain detection usnig scale_pos_weight = 2
 
     model = xgboost.fit(X, y)
 
@@ -88,9 +88,9 @@ def knn_classifier(X, y):
     return KNeighborsClassifier(n_neighbors=5, n_jobs=ncores).fit(X, y)
 
 
-def svm_classifier(X, y):
+# def svm_classifier(X, y):
 
-    return SVC(C=1.0, kernel='rbf', gamma='scale', class_weight="balanced", probability=True).fit(X, y)
+#     return SVC(C=1.0, kernel='rbf', gamma='scale', class_weight="balanced", probability=True).fit(X, y)
 
 
 def naive_Bayes_classifier(X, y):
@@ -98,14 +98,14 @@ def naive_Bayes_classifier(X, y):
 	return naive_bayes.GaussianNB().fit(X, y)
 
 
-def elastic_net_classifier(X, y):
+# def elastic_net_classifier(X, y):
 
-	return ElasticNet().fit(X, y)
+# 	return ElasticNet().fit(X, y)
 
 
-def logistic_regr_classifier(X, y):
+# def logistic_regr_classifier(X, y):
 
-	return LogisticRegression().fit(X, y)
+# 	return LogisticRegression().fit(X, y)
 
 
 def pca(X, n_comp):
@@ -146,9 +146,9 @@ def umap_(X, n_neigh, m_dist):
 #     return reducer.fit_transform(X)
 
 
-def rf_regr(X, y):
+# def rf_regr(X, y):
 
-    return RandomForestRegressor(n_estimators=100, n_jobs=ncores).fit(X, y)
+#     return RandomForestRegressor(n_estimators=100, n_jobs=ncores).fit(X, y)
 
 
 # def CNN_LSTM_classifier(X_train, y_train, X_test, y_test):

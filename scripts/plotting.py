@@ -42,7 +42,7 @@ def scatter_plot(x_, y_, h_, df, x_axis_label, y_axis_label):
     # sns.set_context("paper")
 
     # sns.palplot( sns.color_palette("deep", 10)) # change "Set3" ,"deep" to get new pallete 
-    ax = sns.scatterplot(x=x_, y=y_, data=df, hue_order=["BL", "LLP", "HLP", "A"], hue=h_) # , palette="deep"
+    ax = sns.scatterplot(x=x_, y=y_, data=df, hue=h_) # , palette="deep"
 
     # sns.set(style='whitegrid',)
 
@@ -84,7 +84,10 @@ def draw_distPlot(df, x_, h_, x_axis_label, y_axis_label):
     sns.set_style("whitegrid")
 
     # ["BL", "LLP", "HLP", "A"] = ["Baseline", "Low level pain", "High level pain", "Affect"]
-    ax = sns.kdeplot(data=df, x=x_, hue_order = ["BL", "LLP", "HLP", "A"], hue=h_, fill=True)
+    # ax = sns.kdeplot(data=df, x=x_, hue_order = ["BL", "LLP", "HLP", "A"], hue=h_, fill=True)
+    ax = sns.kdeplot(data=df, x=x_, hue=h_, hist=True, kde=False, fill=True)
+
+    # sns.distplot(x_, hist=True, kde=False, rug=False, bins=20)
 
     # ax = sns.distplot(x, kde = True, kde_kws = {'shade': True, 'linewidth': 3}, hist=False, label=legend_label[0])
     # ax = sns.distplot(y, kde = True, kde_kws = {'shade': True, 'linewidth': 3}, hist=False, label = legend_label[1])
@@ -102,18 +105,35 @@ def draw_distPlot(df, x_, h_, x_axis_label, y_axis_label):
     return 0 
 
 
+def draw_histPlot(df, x_, h_, x_axis_label, y_axis_label):
+    plt.clf()
+
+    plt.rcParams["figure.figsize"] = [6, 4] # [10, 5] looks better though
+    fig, ax = plt.subplots()
+
+    sns.set(font_scale=1.5)
+    sns.set_style("whitegrid")
+
+    sns.histplot(x=x_, hue=h_)
+
+    plt.xlabel(x_axis_label)
+    plt.ylabel(y_axis_label)
+
+    return 0 
+
+
 def bar_plot(x_, y_, h_, df, x_axis_label, y_axis_label):
     plt.rcParams["figure.figsize"] = [6, 6] # [10, 5] looks better though
     fig, ax = plt.subplots()
 
     sns.set_context("paper")
-    sns.set(font_scale=2)
+    sns.set(font_scale=1.5)
     sns.set_style("whitegrid")
     # sns.set_style("ticks", {"xtick.major.size": 2, "ytick.major.size": 2})
 
     # plt.ylim(np.min(df[y_], np.max(df[y_]))) 
     # sns.palplot( sns.color_palette("deep", 10)) # change "Set3" ,"deep" to get new pallete 
-    ax = sns.barplot(x=x_, y=y_, hue_order = ["KNN", "RF", "XGB"], hue=h_, data=df, palette="deep")
+    ax = sns.barplot(x=x_, y=y_, hue_order = ["NB", "KNN", "XGB"], hue=h_, data=df, palette="deep")
 
     plt.xlabel(x_axis_label)
     plt.ylabel(y_axis_label)

@@ -66,39 +66,54 @@ import metrics_
 
 
 def train_n_cv_valid_models(df, features, flag):
-    folds = df.folds.unique().tolist()
+    folds = sorted(df.folds.unique().tolist())
     print(folds)
 
     res_lst = []
     fold_count = 0
-    m_res_mat = np.zeros((0, 6)) # 8 is subject to change 
+    m_res_mat = np.zeros((0, 7)) # 8 is subject to change 
     col_names = None 
+    pred_probs_df = None 
     for fold in folds:
         train_df = df[df["folds"].isin([fold]) == False]
         test_df = df[df["folds"].isin([fold]) == True]
         
-        print(train_df.shape)
+        # print(train_df.shape)
         
         # run experiment for classification with BERT features 
         if flag == "XGB":
             model = model_.xgboost_classifier(train_df[features].astype(np.float64), train_df["ground_truth"])
-            pred = model.predict(test_df[features])
+        elif flag == "KNN":
+            model = model_.knn_classifier(train_df[features].astype(np.float64), train_df["ground_truth"])
+        elif flag == "NB":
+            model = model_.naive_Bayes_classifier(train_df[features].astype(np.float64), train_df["ground_truth"])
 
-            clf_report = classification_report(test_df["ground_truth"], pred, output_dict=True)
-            cls_report_df = cls_report_dict2mat(clf_report)
-            print("Results obtained on fold:", fold)
-            print(cls_report_df)
 
-            print(confusion_matrix(test_df["ground_truth"], pred))
+        pred = model.predict(test_df[features])
+        pred_probs = model.predict_proba(test_df[features])
 
-            cls_report_df["metrics_names"] = cls_report_df.index.tolist()
-            m_res_mat = np.append(m_res_mat, cls_report_df.values, axis=0)
+        # write the class probabilities to disk 
+        pred_probs = pd.DataFrame(pred_probs, columns=[flag + "_" + "prob0", flag + "_" + "prob1"])
+        pred_probs["ID"] = test_df["ID"].tolist()
+        if pred_probs_df is None:
+            pred_probs_df = pred_probs
+        else:
+            pred_probs_df = pd.concat([pred_probs_df, pred_probs], axis=0)
 
-            col_names = cls_report_df.columns.tolist()
+        clf_report = classification_report(test_df["ground_truth"], pred, output_dict=True)
+        cls_report_df = cls_report_dict2mat(clf_report)
+        # print("Results obtained on fold:", fold)
+        # print(cls_report_df)
 
-        # TODO: include tweet ID and prediction for analysis 
+        # print(confusion_matrix(test_df["ground_truth"], pred))
 
-    return pd.DataFrame(m_res_mat, columns = col_names)
+        cls_report_df["metrics_names"] = cls_report_df.index.tolist()
+        cls_report_df["cls_model_name"] = [flag] * cls_report_df.shape[0]
+        m_res_mat = np.append(m_res_mat, cls_report_df.values, axis=0)
+
+        col_names = cls_report_df.columns.tolist()
+
+    return pd.DataFrame(m_res_mat, columns = col_names), pred_probs_df
 
 
 def train_n_cv_valid_LDA(df, features, flag):
